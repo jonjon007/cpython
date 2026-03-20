@@ -4465,6 +4465,11 @@ static PyObject *
 os_listdrives_impl(PyObject *module)
 /*[clinic end generated code: output=aaece9dacdf682b5 input=1af9ccc9e583798e]*/
 {
+#if defined(MS_WINDOWS_GAMES) && !defined(MS_WINDOWS_DESKTOP)
+    PyErr_SetString(PyExc_NotImplementedError,
+        "os.listdrives() is not available on this platform");
+    return NULL;
+#else
     /* Number of possible drives is limited, so 256 should always be enough.
        On the day when it is not, listmounts() will have to be used. */
     wchar_t buffer[256];
@@ -4497,6 +4502,7 @@ os_listdrives_impl(PyObject *module)
         Py_DECREF(str);
     }
     return result;
+#endif /* !MS_WINDOWS_GAMES */
 }
 
 /*[clinic input]
@@ -4512,6 +4518,11 @@ static PyObject *
 os_listvolumes_impl(PyObject *module)
 /*[clinic end generated code: output=534e10ea2bf9d386 input=f6e4e70371f11e99]*/
 {
+#if defined(MS_WINDOWS_GAMES) && !defined(MS_WINDOWS_DESKTOP)
+    PyErr_SetString(PyExc_NotImplementedError,
+        "os.listvolumes() is not available on this platform");
+    return NULL;
+#else
     PyObject *result = PyList_New(0);
     HANDLE find = INVALID_HANDLE_VALUE;
     wchar_t buffer[MAX_PATH + 1];
@@ -4558,6 +4569,7 @@ os_listvolumes_impl(PyObject *module)
         result = NULL;
     }
     return result;
+#endif /* !MS_WINDOWS_GAMES */
 }
 
 
@@ -4576,6 +4588,11 @@ static PyObject *
 os_listmounts_impl(PyObject *module, path_t *volume)
 /*[clinic end generated code: output=06da49679de4512e input=a8a27178e3f67845]*/
 {
+#if defined(MS_WINDOWS_GAMES) && !defined(MS_WINDOWS_DESKTOP)
+    PyErr_SetString(PyExc_NotImplementedError,
+        "os.listmounts() is not available on this platform");
+    return NULL;
+#else
     wchar_t default_buffer[MAX_PATH + 1];
     DWORD buflen = Py_ARRAY_LENGTH(default_buffer);
     LPWSTR buffer = default_buffer;
@@ -4638,6 +4655,7 @@ exit:
     Py_XDECREF(nullchar);
     Py_XDECREF(str);
     return result;
+#endif /* !MS_WINDOWS_GAMES */
 }
 
 

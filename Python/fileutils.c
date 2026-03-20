@@ -2690,6 +2690,10 @@ error:
 int
 _Py_get_blocking(int fd)
 {
+#if defined(MS_WINDOWS_GAMES) && !defined(MS_WINDOWS_DESKTOP)
+    /* Xbox GDK doesn't support named pipes; assume blocking */
+    return 1;
+#else
     HANDLE handle;
     DWORD mode;
     BOOL success;
@@ -2710,11 +2714,16 @@ _Py_get_blocking(int fd)
     }
 
     return !(mode & PIPE_NOWAIT);
+#endif /* !MS_WINDOWS_GAMES */
 }
 
 int
 _Py_set_blocking(int fd, int blocking)
 {
+#if defined(MS_WINDOWS_GAMES) && !defined(MS_WINDOWS_DESKTOP)
+    /* Xbox GDK doesn't support named pipes; no-op */
+    return 0;
+#else
     HANDLE handle;
     DWORD mode;
     BOOL success;
@@ -2743,6 +2752,7 @@ _Py_set_blocking(int fd, int blocking)
         return -1;
     }
     return 0;
+#endif /* !MS_WINDOWS_GAMES */
 }
 
 void*

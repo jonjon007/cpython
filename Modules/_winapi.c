@@ -1469,6 +1469,11 @@ static PyObject *
 _winapi_GetLongPathName_impl(PyObject *module, LPCWSTR path)
 /*[clinic end generated code: output=c4774b080275a2d0 input=9872e211e3a4a88f]*/
 {
+#if defined(MS_WINDOWS_GAMES) && !defined(MS_WINDOWS_DESKTOP)
+    PyErr_SetString(PyExc_NotImplementedError,
+        "GetLongPathName is not available on this platform");
+    return NULL;
+#else
     DWORD cchBuffer;
     PyObject *result = NULL;
 
@@ -1492,6 +1497,7 @@ _winapi_GetLongPathName_impl(PyObject *module, LPCWSTR path)
         PyErr_SetFromWindowsErr(0);
     }
     return result;
+#endif /* !MS_WINDOWS_GAMES */
 }
 
 /*[clinic input]
@@ -1545,6 +1551,11 @@ static PyObject *
 _winapi_GetShortPathName_impl(PyObject *module, LPCWSTR path)
 /*[clinic end generated code: output=dab6ae494c621e81 input=43fa349aaf2ac718]*/
 {
+#if defined(MS_WINDOWS_GAMES) && !defined(MS_WINDOWS_DESKTOP)
+    PyErr_SetString(PyExc_NotImplementedError,
+        "GetShortPathName is not available on this platform");
+    return NULL;
+#else
     DWORD cchBuffer;
     PyObject *result = NULL;
 
@@ -1568,6 +1579,7 @@ _winapi_GetShortPathName_impl(PyObject *module, LPCWSTR path)
         PyErr_SetFromWindowsErr(0);
     }
     return result;
+#endif /* !MS_WINDOWS_GAMES */
 }
 
 /*[clinic input]
@@ -2345,6 +2357,10 @@ _winapi_NeedCurrentDirectoryForExePath_impl(PyObject *module,
                                             LPCWSTR exe_name)
 /*[clinic end generated code: output=a65ec879502b58fc input=972aac88a1ec2f00]*/
 {
+#if defined(MS_WINDOWS_GAMES) && !defined(MS_WINDOWS_DESKTOP)
+    /* Xbox has no concept of "current directory for exe path" */
+    return 0;
+#else
     BOOL result;
 
     Py_BEGIN_ALLOW_THREADS
@@ -2352,6 +2368,7 @@ _winapi_NeedCurrentDirectoryForExePath_impl(PyObject *module,
     Py_END_ALLOW_THREADS
 
     return result;
+#endif /* !MS_WINDOWS_GAMES */
 }
 
 
