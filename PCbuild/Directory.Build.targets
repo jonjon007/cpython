@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <!-- This is intentionally left blank but exists to avoid being imported from some directory above -->
+  <!-- GDK Xbox Series: set include/lib paths after GDK platform props have defined Console_SdkIncludeRoot -->
+  <PropertyGroup Condition="$(Platform.StartsWith('Gaming.Xbox'))">
+    <GDKCrossPlatformPath Condition="'$(GDKCrossPlatformPath)'==''">$(GameDKCoreLatest)</GDKCrossPlatformPath>
+    <GDKCrossPlatformPath Condition="'$(GDKCrossPlatformPath)'==''">$(GameDKXboxLatest)</GDKCrossPlatformPath>
+    <IncludePath>$(Console_SdkIncludeRoot)</IncludePath>
+    <LibraryPath>$(Console_SdkLibPath)</LibraryPath>
+    <ExecutablePath>$(Console_SdkRoot)bin;$(Console_SdkToolPath);$(ExecutablePath)</ExecutablePath>
+  </PropertyGroup>
 </Project>

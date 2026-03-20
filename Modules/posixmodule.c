@@ -32,10 +32,12 @@
 #    include <pathcch.h>
 #  endif
 #  include <winioctl.h>
-#  include <lmcons.h>             // UNLEN
+#  if !defined(MS_WINDOWS_GAMES) || defined(MS_WINDOWS_DESKTOP)
+#    include <lmcons.h>             // UNLEN
+#    include <aclapi.h>             // SetEntriesInAcl
+#    include <sddl.h>               // SDDL_REVISION_1
+#  endif
 #  include "osdefs.h"             // SEP
-#  include <aclapi.h>             // SetEntriesInAcl
-#  include <sddl.h>               // SDDL_REVISION_1
 #  if defined(MS_WINDOWS_DESKTOP) || defined(MS_WINDOWS_SYSTEM)
 #    define HAVE_SYMLINK
 #  endif /* MS_WINDOWS_DESKTOP | MS_WINDOWS_SYSTEM */
@@ -5357,6 +5359,7 @@ os_mkdir_impl(PyObject *module, path_t *path, int mode, int dir_fd)
 
 #ifdef MS_WINDOWS
     Py_BEGIN_ALLOW_THREADS
+#if !defined(MS_WINDOWS_GAMES) || defined(MS_WINDOWS_DESKTOP)
     if (mode == 0700 /* 0o700 */) {
         ULONG sdSize;
         pSecAttr = &secAttr;
@@ -5372,6 +5375,7 @@ os_mkdir_impl(PyObject *module, path_t *path, int mode, int dir_fd)
             error = GetLastError();
         }
     }
+#endif /* !MS_WINDOWS_GAMES */
     if (!error) {
         result = CreateDirectoryW(path->wide, pSecAttr);
         if (secAttr.lpSecurityDescriptor &&

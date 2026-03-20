@@ -79,6 +79,7 @@
       <IgnoreSpecificDefaultLibraries>LIBC;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <TargetMachine>MachineX86</TargetMachine>
       <TargetMachine Condition="'$(Platform)' == 'x64'">MachineX64</TargetMachine>
+      <TargetMachine Condition="$(Platform.Contains('x64'))">MachineX64</TargetMachine>
       <TargetMachine Condition="'$(Platform)'=='ARM'">MachineARM</TargetMachine>
       <TargetMachine Condition="'$(Platform)'=='ARM64'">MachineARM64</TargetMachine>
       <ProfileGuidedDatabase Condition="$(SupportPGO)">$(OutDir)$(TargetName).pgd</ProfileGuidedDatabase>
