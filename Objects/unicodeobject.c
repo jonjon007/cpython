@@ -15543,6 +15543,16 @@ init_stdio_encoding(PyInterpreterState *interp)
 {
     /* Update the stdio encoding to the normalized Python codec name. */
     PyConfig *config = (PyConfig*)_PyInterpreterState_GetConfig(interp);
+#if defined(MS_WINDOWS_GAMES) && !defined(MS_WINDOWS_DESKTOP)
+    /* Xbox GDK: skip codec normalization for known built-in encodings. */
+    if (config->stdio_encoding != NULL
+        && (wcscmp(config->stdio_encoding, L"utf-8") == 0
+            || wcscmp(config->stdio_encoding, L"ascii") == 0
+            || wcscmp(config->stdio_encoding, L"mbcs") == 0))
+    {
+        return _PyStatus_OK();
+    }
+#endif
     if (config_get_codec_name(&config->stdio_encoding) < 0) {
         return _PyStatus_ERR("failed to get the Python codec name "
                              "of the stdio encoding");
@@ -15617,6 +15627,19 @@ init_fs_encoding(PyThreadState *tstate)
        For example, replace "ANSI_X3.4-1968" (locale encoding) with "ascii"
        (Python codec name). */
     PyConfig *config = (PyConfig*)_PyInterpreterState_GetConfig(interp);
+#if defined(MS_WINDOWS_GAMES) && !defined(MS_WINDOWS_DESKTOP)
+    /* Xbox GDK: the encodings package is not available on the filesystem.
+       Skip codec normalization for known built-in encodings. The name is
+       already canonical so normalization is a no-op anyway. */
+    if (config->filesystem_encoding != NULL
+        && (wcscmp(config->filesystem_encoding, L"utf-8") == 0
+            || wcscmp(config->filesystem_encoding, L"ascii") == 0
+            || wcscmp(config->filesystem_encoding, L"mbcs") == 0))
+    {
+        /* Already normalized — fall through to init_fs_codec */
+    }
+    else
+#endif
     if (config_get_codec_name(&config->filesystem_encoding) < 0) {
         _Py_DumpPathConfig(tstate);
         return _PyStatus_ERR("failed to get the Python codec "
